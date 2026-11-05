@@ -28,7 +28,7 @@ int connect_to_server(const char *host, const char *port) {
     // TODO 3: connect sockfd to result->ai_addr (length result->ai_addrlen);
     //         exit(1) with perror("connect") on failure.
     // connect(sockfd, result->ai_addr, result->ai_adderlen);
-    if (connect(sockfd, result->ai_addr, result->ai_adderlen) == -1) { 
+    if (connect(sockfd, result->ai_addr, result->ai_addrlen) == -1) { 
         perror("connect");
         exit(1); 
     }
