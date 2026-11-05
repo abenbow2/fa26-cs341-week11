@@ -13,7 +13,7 @@ static int serverSocket;
 
 int connect_to_server(const char *host, const char *port) {
     // TODO 1: create a TCP socket (AF_INET, SOCK_STREAM, 0). Replace the -1.
-    int sockfd = -1;
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) { fprintf(stderr, "connect_to_server: socket not created (finish TODO 1)\n"); exit(1); }
 
     struct addrinfo hints, *result;
@@ -22,11 +22,16 @@ int connect_to_server(const char *host, const char *port) {
     hints.ai_socktype = SOCK_STREAM;
 
     // TODO 2: call getaddrinfo(host, port, &hints, &result); store the return in err.
-    int err = -1;
+    int err = getaddrinfo(host, port, &hints, &result);
     if (err != 0) { fprintf(stderr, "getaddrinfo (finish TODO 2): %s\n", gai_strerror(err)); exit(1); }
 
     // TODO 3: connect sockfd to result->ai_addr (length result->ai_addrlen);
     //         exit(1) with perror("connect") on failure.
+    // connect(sockfd, result->ai_addr, result->ai_adderlen);
+    if (connect(sockfd, result->ai_addr, result->ai_adderlen) == -1) { 
+        perror("connect");
+        exit(1); 
+    }
 
     freeaddrinfo(result);
     return sockfd;
@@ -34,8 +39,11 @@ int connect_to_server(const char *host, const char *port) {
 
 ssize_t write_message_size(size_t size, int fd) {
     // TODO 4: convert size to uint32_t in NETWORK byte order, send exactly 4 bytes.
-    (void)size; (void)fd;
-    return -1;
+    (void)size; 
+    (void)fd;
+    uint32_t new_size = (uint32_t)size;
+    new_size = htobe32(new_size);
+    return new_size;
 }
 
 ssize_t get_message_size(int fd) {
@@ -43,7 +51,8 @@ ssize_t get_message_size(int fd) {
     ssize_t r = read_all_from_socket(fd, (char *)&net, 4);
     if (r <= 0) return r;
     // TODO 5: convert the 4 bytes in `net` from network to host order and return them.
-    return -1;
+    return ntohl(net);
+    // return -1;
 }
 
 void *read_from_server(void *arg) {
