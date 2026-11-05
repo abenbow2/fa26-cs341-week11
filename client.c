@@ -77,11 +77,11 @@ int main(int argc, char **argv) {
         line[strcspn(line, "\n")] = 0;
         char msg[600]; snprintf(msg, sizeof(msg), "%s: %s", name, line);
         size_t body_len = strlen(msg);
-        size_t declared = body_len + 4096;   // (Part 2) try making this bigger than body_len
+        size_t declared = body_len;   // (Part 2) try making this bigger than body_len
         if (write_message_size(declared, serverSocket) <= 0) break;
         if (write_all_to_socket(serverSocket, msg, body_len) <= 0) break;
         printf("> "); fflush(stdout);
-    }
+    
     close(serverSocket);
     return 0;
 }
